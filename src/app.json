@@ -3,7 +3,9 @@
     "pages/index/main"
   ],
   "usingComponents": {
-    "van-button": "vant-weapp/dist/button/index"
+    "van-button": "vant-weapp/dist/button/index",
+    "van-icon": "vant-weapp/dist/icon/index"
+
   },
   "window": {
     "backgroundTextStyle": "light",

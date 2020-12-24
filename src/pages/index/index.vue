@@ -1,27 +1,48 @@
 <template>
-  <div>
-    book
-    <div class="red">h</div>
-    <van-button type="primary" @click="jump">按钮</van-button>
+  <div class="home">
+   <SearchBar
+     disabled
+     @onclick="onSearchBarClick"/>
+<HomeCard/>
+<!--
+ height="100px"
+  mode="scaleToFill"
+  -->
   </div>
 </template>
 
 <script>
-import {get} from '@/utils/request'
+import SearchBar from '../../components/home/searchBar'// 搜索框组件
+import HomeCard from '../../components/home/homeCard'
+// 照片组件
 export default {
-  methods: {
-    jump () {
-      // this.$router.push('/pages/index/main')
-      get('www.baidu.com').then(Response => {
-        console.log('fanhuui', Response)
-      })
+  components: {
+    HomeCard,
+    SearchBar
+
+  },
+  data () {
+    return {
+
     }
+  },
+  methods: {
+    /*
+    * 单击搜索栏
+    * */
+    onSearchBarClick () {
+      // 跳转搜索页面
+    },
+    /*
+    * 照片点击
+    * */
+    imgOnClick () {}
   }
 }
 </script>
 
 <style lang='scss' scoped>
-.red {
-  color: red;
+.home{
+
 }
 </style>
