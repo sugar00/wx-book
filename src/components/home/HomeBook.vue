@@ -3,18 +3,24 @@
     <div class="home-book">
 <!--      头-->
       <div class="home-book-header">{{title}}</div>
-
       <!--      内容-->
       <div class="home-book-content">
 <!--        两层循环，第一次获取row，第二层获取col -->
         <div class="home-book-row" v-for="(item,index) in bookData" :key="index">
           <div class="home-book-col" v-for="(book,bookIndex) in item" :key="bookIndex"
                :style="{flex:' 0 0 ' + (100/col) + '%'}">
-<!--电子书信息展示-->
-            <div class="book-wrapper" :style="{flexDirection:mode===HOME_BOOK_MODE.COL?'column':'row'}" @click="onBookClick">
+<!--电子书信息展示
+若mode分类为Row或者Col 则展示 book wrapper
+否则展示 category 分类-->
+            <div class="book-wrapper"
+                 :style="{flexDirection:mode===HOME_BOOK_MODE.COL?'column':'row'}"
+                 @click="onBookClick"
+                 v-if="mode===HOME_BOOK_MODE.CO||mode===HOME_BOOK_MODE.ROW"
+            >
               <ImageView :src="book.cover"/>
               <!--              垂直布局-->
-              <div class="book-title-wrapper book-title-col" v-if="mode===HOME_BOOK_MODE.COL">
+              <div class="book-title-wrapper book-title-col"
+                   v-if="mode===HOME_BOOK_MODE.COL">
                 <div class="book-title">{{book.title}}</div>
               </div>
               <!--              水平布局-->
@@ -33,20 +39,36 @@
 
               </div>
             </div>
+            <div v-else class="category-wrapper">
+            <!--分类名称-->
+              <div class="category-text">{{book.text}}</div>
+            <!--  图书数量-->
+              <div class="category-num">{{book.num}}本书</div>
+              <!--  照片-->
+              <div class="category-img-wrapper">
+              <!--  两张封面照片-->
+                <div class="category-img1">
+                  <image-view :src="book.cover"></image-view>
+                </div>
+                <div class="category-img2">
+                  <image-view :src="book.cover2"></image-view>
+                </div>
+              </div>
+
+            </div>
           </div>
+
         </div>
       </div>
-
       <!--      尾巴-->
       <div class="home-book-footer" v-if="showBtn" @click="onMoreClick">
         <van-button round  custom-class="home-book-btn" >{{btnText}}</van-button>
       </div>
-
     </div>
 </template>
 
 <script>
-import {HOME_BOOK_MODE} from '../../utils/const'
+import {HOME_BOOK_MODE, CATEGORY} from '../../utils/const'
 import ImageView from '../base/imageView'
 // 引用数据
 
@@ -114,6 +136,10 @@ export default {
       const {data, row, col} = this
       //  判断data是否为空且data是否存在
       if (data && data.length > 0) {
+        // 小程序不支持过滤 故在计算属性中进行转换处理
+        data.forEach(book => {
+          book.text = CATEGORY[book.categoryText.toLowerCase()]
+        })
         // 计算要获取的数量
         const Number = row * col
         //  从data中截取数量
@@ -150,7 +176,7 @@ export default {
 <style lang="scss" scoped>
 .home-book{
   margin-top: 10px;
-  .home-book-h eader{
+  .home-book-header{
     padding: 13px 0 0 20.5px ;
   }
   .home-book-content{
@@ -163,6 +189,7 @@ export default {
       .home-book-col{
         padding:0 8px;//图书与图书之间左右都为8像素
         box-sizing: border-box;//解决溢出问题
+        /*除分类外的图书展示*/
         .book-wrapper{
           display: flex;
           flex-wrap: nowrap;
@@ -204,6 +231,49 @@ export default {
             }
           }
         }
+      /*  分类展示*/
+        .category-wrapper{
+          position: relative;//便于两张图片的绝对定位
+          display: flex;
+          flex-direction: column;//换行展示
+          justify-content: space-between;
+          background: #F8F9FB;
+          border-radius: 10px;
+          height: 96px;
+          padding: 13px 0 14.5px 16px;
+          box-sizing: border-box;
+          .category-text{
+            font-size: 16px;
+            line-height: 22.5px;
+            width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .category-num{
+            color: #868686;
+            font-size: 12px;
+            line-height: 16.5px;
+          }
+          .category-img-wrapper{
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            .category-img1{
+              position: absolute;
+              right: 0;
+              bottom: -5px;
+              z-index: 100;
+              width: 48px;
+            }
+            .category-img2{
+              position: absolute;
+              right: 30px;
+              bottom: -5px;
+              z-index: 90;
+              width: 36px;
+            }
+          }
+        }
       }
     }
   }
@@ -214,12 +284,16 @@ export default {
 }
 </style>
 <style lang="scss">
+.category-img1{
+  .img{
+    border-radius: 0 0 10px 0;
 
+  }
+}
 .home-book-footer{
-
   .home-book-btn{
   width: 100%;//宽度设为100%
-font-size:14px ;
+  font-size:14px ;
     color: #3696Ef;
     border: 1px solid #EDEEEE;
 }
